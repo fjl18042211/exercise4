@@ -2,50 +2,39 @@
 #include <opencv.hpp>
 #include <stdlib.h>
 using namespace cv;
-int main() {
-	float histgram[256];
-	for (int i = 0; i < 256; i++) {
-		histgram[i] = 0;
+using namespace std;
+int main()
+{
+	VideoCapture cap;
+	cap.open(0);
+	if (!cap.isOpened())
+	{
+		std::cout << "不能打开视频文件" << std::endl;
+		return -1;
 	}
-	cv::Mat srcMat = imread("D:\\1.jpg", 0);
-	imshow("【原图】", srcMat);
-	int height = srcMat.rows;
-	int width = srcMat.cols*srcMat.channels();
-	int totalpixel;
-	totalpixel = width * height;
-	for (int j = 0; j < height; j++) {
-		uchar* data = srcMat.ptr<uchar>(j);
-		for (int i = 0; i < width; i++) {
-			int index = data[i];
-			histgram[index] = histgram[index] + 1;
+	double fps = cap.get(CAP_PROP_FPS);
+	std::cout << "fps" << fps << std::endl;
+	while (1)
+	{
+		cv::Mat frame;
+		cv::Mat dx;
+		cv::Mat dy;
+		bool rSucess = cap.read(frame);
+		if (!rSucess)
+		{
+			std::cout << "不能从视频文件中读取帧" << std::endl;
+			break;
+		}
+		else
+		{
+			Sobel(frame, dx, CV_16SC1, 1, 0, 3);
+			Sobel(frame, dy, CV_16SC1, 0, 1, 3);
+			cv::imshow("dx", dx);
+			cv::imshow("dy", dy);
 
 		}
-	}
-	int max = 0;
-	for (int i = 0; i < 256; i++)
-	{
-		if (histgram[i] > max)  max = histgram[i];
-		std::cout << histgram[i] << std::endl;
-	}
-	Mat drawImage = Mat::zeros(Size(256, 256), CV_8UC3);
-
-	for (int i = 0; i < 256; i++)
-
-	{
-
-		int value = cvRound(histgram[i] * 256 * 0.9 / max);
-
-		line(drawImage, Point(i, drawImage.rows - 1), Point(i, drawImage.rows - 1 - value), Scalar(255, 0, 0));
-		std::cout << "Value " << i << " = " << value << std::endl;
-
 
 	}
-
-	std::cout << totalpixel << std::endl;
-	imshow("【直方图】", drawImage);
-
-	waitKey(0);
-
+	waitKey(30);
 	return 0;
-
 }
