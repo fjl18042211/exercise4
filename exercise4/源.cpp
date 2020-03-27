@@ -17,8 +17,11 @@ int main()
 	while (1)
 	{
 		cv::Mat frame;
+		cv::Mat rframe;
 		cv::Mat dx;
+		cv::Mat abs_dx;
 		cv::Mat dy;
+		cv::Mat abs_dy;
 		bool rSucess = cap.read(frame);
 		if (!rSucess)
 		{
@@ -26,15 +29,18 @@ int main()
 			break;
 		}
 		else
-		{
+		{   
+			
 			Sobel(frame, dx, CV_16SC1, 1, 0, 3);
+			convertScaleAbs(dx,abs_dx );
 			Sobel(frame, dy, CV_16SC1, 0, 1, 3);
-			cv::imshow("dx", dx);
-			cv::imshow("dy", dy);
+			convertScaleAbs(dy, abs_dy);
+			cv::imshow("dx", abs_dx);
+			cv::imshow("dy", abs_dy);
 
 		}
-
+		waitKey(30);
 	}
-	waitKey(30);
+	
 	return 0;
 }
