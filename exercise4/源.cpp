@@ -5,42 +5,24 @@ using namespace cv;
 using namespace std;
 int main()
 {
-	VideoCapture cap;
-	cap.open(0);
-	if (!cap.isOpened())
-	{
-		std::cout << "不能打开视频文件" << std::endl;
-		return -1;
-	}
-	double fps = cap.get(CAP_PROP_FPS);
-	std::cout << "fps" << fps << std::endl;
-	while (1)
-	{
-		cv::Mat frame;
-		cv::Mat rframe;
-		cv::Mat dx;
-		cv::Mat abs_dx;
-		cv::Mat dy;
-		cv::Mat abs_dy;
-		bool rSucess = cap.read(frame);
-		if (!rSucess)
-		{
-			std::cout << "不能从视频文件中读取帧" << std::endl;
-			break;
-		}
-		else
-		{   
-			
-			Sobel(frame, dx, CV_16SC1, 1, 0, 3);
-			convertScaleAbs(dx,abs_dx );
-			Sobel(frame, dy, CV_16SC1, 0, 1, 3);
-			convertScaleAbs(dy, abs_dy);
-			cv::imshow("dx", abs_dx);
-			cv::imshow("dy", abs_dy);
-
-		}
-		waitKey(30);
-	}
-	
+	cv::Mat dstMat;
+	cv::Mat srcMat = cv::imread("D:\\lena.jpg", 1);
+	if (srcMat.empty()) return-1;
+	const cv::Point2f pts1[] =   {
+									cv::Point2f(150,150),
+									cv::Point2f(150,300),
+									cv::Point2f(350,300), 
+	                                cv::Point2f(350,150) };
+	const cv::Point2f pts2[] =   {
+									cv::Point2f(200,150),
+									cv::Point2f(200,300),
+									cv::Point2f(340,270),
+	                                cv::Point2f(340,180), };
+	const cv::Mat affine_matrix = cv::getAffineTransform(pts1, pts2);
+	cv::warpAffine(srcMat, dstMat, affine_matrix, srcMat.size());
+	cv::imshow("src", srcMat);
+	cv::imshow("dst", dstMat);
+	cv::waitKey(0);
 	return 0;
+
 }
